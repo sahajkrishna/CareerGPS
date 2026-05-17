@@ -834,7 +834,6 @@
         // Fire and forget so the UI doesn't freeze waiting for the sheet to update
         fetch(WEBHOOK_TRACKER_URL, {
           method: 'POST',
-          mode: 'no-cors', // Bypasses browser CORS blocking!
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: action, data: appData })
         }).catch(e => console.error("Background sync failed", e)); 
