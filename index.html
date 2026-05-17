@@ -460,7 +460,7 @@
       </div>
       <nav style="display: flex; gap: 0.5rem; background: rgba(255,255,255,0.03); padding: 0.3rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
         <button id="nav-reality" onclick="showTab('reality')" style="background: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;">◎ Reality Check</button>
-        <button id="nav-mirror" onclick="showTab('mirror')" style="background: transparent; color: var(--text-muted); border: none; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;">↺ The Mirror</button>
+        <button id="nav-mirror" onclick="showTab('mirror')" style="background: transparent; color: var(--text-muted); border: none; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;">📋 Job Tracker</button>
       </nav>
     </header>
 
@@ -614,12 +614,12 @@
     </div>
     </div> <!-- END TAB REALITY -->
 
-    <!-- TAB: THE MIRROR -->
+    <!-- TAB: JOB TRACKER -->
     <div id="tab-mirror" style="display: none; animation: fadeIn 0.3s ease;">
       <header style="margin-bottom: 2.5rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
         <div>
-          <h3 style="color: var(--text-muted); font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase;">The Mirror</h3>
-          <h1 style="font-size: 3rem; margin-bottom: 0.5rem; letter-spacing: -1px;">Receipts.</h1>
+          <h3 style="color: var(--text-muted); font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase;">Job Tracker</h3>
+          <h1 style="font-size: 3rem; margin-bottom: 0.5rem; letter-spacing: -1px;">Application Log.</h1>
           <p class="subtitle" style="text-align: left; font-size: 1.1rem; max-width: 600px;">Every application. Every rejection. Every lesson.</p>
         </div>
         <button onclick="exportToCSV()" style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">📥 Export CSV</button>
@@ -655,13 +655,22 @@
           <input type="text" id="mirror-company" placeholder="Company (e.g. Google)">
           <input type="text" id="mirror-role" placeholder="Role (e.g. Software Engineer)">
         </div>
-        <select id="mirror-status" style="margin-bottom: 1.5rem; cursor: pointer;">
-          <option value="Pending">🕒 Pending</option>
-          <option value="Interview">✓ Interviewing</option>
-          <option value="Rejected">❌ Rejected</option>
-          <option value="Offer">🏆 Offer Received</option>
-        </select>
-        <button onclick="saveApplication()" style="background: var(--success); color: #000; border: none; font-weight: 700; width: 100%;">Save Receipt</button>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+          <div style="display: flex; flex-direction: column;">
+            <label style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; font-weight: 600;">Status</label>
+            <select id="mirror-status" style="cursor: pointer; height: 42px;">
+              <option value="Pending">🕒 Pending</option>
+              <option value="Interview">✓ Interviewing</option>
+              <option value="Rejected">❌ Rejected</option>
+              <option value="Offer">🏆 Offer Received</option>
+            </select>
+          </div>
+          <div style="display: flex; flex-direction: column;">
+            <label style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; font-weight: 600;">Follow-Up Date (Optional)</label>
+            <input type="date" id="mirror-followup" style="cursor: pointer; color-scheme: dark; height: 42px;">
+          </div>
+        </div>
+        <button onclick="saveApplication()" style="background: var(--success); color: #000; border: none; font-weight: 700; width: 100%;">Save Application</button>
       </div>
 
       <!-- Logs Table -->
@@ -698,10 +707,11 @@
       const company = document.getElementById('mirror-company').value.trim();
       const role = document.getElementById('mirror-role').value.trim();
       const status = document.getElementById('mirror-status').value;
+      const followupDate = document.getElementById('mirror-followup').value;
       
       if(!company || !role) return alert("Please enter both Company and Role to save a receipt!");
 
-      const app = { id: Date.now(), company, role, status, date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) };
+      const app = { id: Date.now(), company, role, status, date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), followupDate };
       let apps = JSON.parse(localStorage.getItem('careergps_apps') || '[]');
       apps.unshift(app); // Add to top
       localStorage.setItem('careergps_apps', JSON.stringify(apps));
@@ -713,6 +723,7 @@
       
       document.getElementById('mirror-company').value = '';
       document.getElementById('mirror-role').value = '';
+      document.getElementById('mirror-followup').value = '';
       loadApplications();
     }
 
@@ -720,8 +731,8 @@
       const apps = JSON.parse(localStorage.getItem('careergps_apps') || '[]');
       if(apps.length === 0) return alert("No data to export!");
       
-      let csvContent = "data:text/csv;charset=utf-8,Company,Role,Status,Date\n";
-      apps.forEach(a => { csvContent += `"${a.company}","${a.role}","${a.status}","${a.date}"\n`; });
+      let csvContent = "data:text/csv;charset=utf-8,Company,Role,Status,Date,FollowUp\n";
+      apps.forEach(a => { csvContent += `"${a.company}","${a.role}","${a.status}","${a.date}","${a.followupDate || ''}"\n`; });
       
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement("a");
@@ -749,10 +760,16 @@
         return;
       }
 
-      container.innerHTML = apps.map(app => `
+      container.innerHTML = apps.map(app => {
+        let followupBadge = '';
+        if(app.followupDate) {
+          const isPassed = new Date(app.followupDate) <= new Date();
+          followupBadge = `<span style="margin-left: 10px; font-size: 0.75rem; padding: 3px 8px; border-radius: 4px; background: ${isPassed ? 'rgba(245,158,11,0.2)' : 'rgba(255,255,255,0.05)'}; color: ${isPassed ? 'var(--warning)' : 'var(--text-muted)'};"><span style="margin-right: 4px;">📅</span>Follow Up: ${app.followupDate}</span>`;
+        }
+        return `
         <div style="display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
           <div>
-            <div style="font-weight: 600; color: #fff; font-size: 1.1rem; margin-bottom: 4px;">${app.company}</div>
+            <div style="font-weight: 600; color: #fff; font-size: 1.1rem; margin-bottom: 4px; display: flex; align-items: center;">${app.company} ${followupBadge}</div>
             <div style="font-size: 0.9rem; color: var(--text-muted);">${app.role} <span style="margin: 0 8px; opacity: 0.5;">•</span> ${app.date}</div>
           </div>
           <div style="padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.5px;
@@ -761,7 +778,7 @@
             ${app.status.toUpperCase()}
           </div>
         </div>
-      `).join('');
+      `}).join('');
     }
 
     // PRODUCTION URL (Always On)
