@@ -10,6 +10,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.21/mammoth.browser.min.js"></script>
   <!-- Library for HTML to PDF Export -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <!-- Confetti Library for Offer Celebrations -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <script>
     // Configure pdf.js worker
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
@@ -614,10 +616,13 @@
 
     <!-- TAB: THE MIRROR -->
     <div id="tab-mirror" style="display: none; animation: fadeIn 0.3s ease;">
-      <header style="margin-bottom: 2.5rem;">
-        <h3 style="color: var(--text-muted); font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase;">The Mirror</h3>
-        <h1 style="font-size: 3rem; margin-bottom: 0.5rem; letter-spacing: -1px;">Receipts.</h1>
-        <p class="subtitle" style="text-align: left; font-size: 1.1rem; max-width: 600px;">Every application. Every rejection. Every lesson.</p>
+      <header style="margin-bottom: 2.5rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h3 style="color: var(--text-muted); font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase;">The Mirror</h3>
+          <h1 style="font-size: 3rem; margin-bottom: 0.5rem; letter-spacing: -1px;">Receipts.</h1>
+          <p class="subtitle" style="text-align: left; font-size: 1.1rem; max-width: 600px;">Every application. Every rejection. Every lesson.</p>
+        </div>
+        <button onclick="exportToCSV()" style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">📥 Export CSV</button>
       </header>
 
       <!-- Metrics -->
@@ -701,9 +706,30 @@
       apps.unshift(app); // Add to top
       localStorage.setItem('careergps_apps', JSON.stringify(apps));
       
+      // CONFETTI CELEBRATION!
+      if(status === 'Offer') {
+        confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+      }
+      
       document.getElementById('mirror-company').value = '';
       document.getElementById('mirror-role').value = '';
       loadApplications();
+    }
+
+    function exportToCSV() {
+      const apps = JSON.parse(localStorage.getItem('careergps_apps') || '[]');
+      if(apps.length === 0) return alert("No data to export!");
+      
+      let csvContent = "data:text/csv;charset=utf-8,Company,Role,Status,Date\n";
+      apps.forEach(a => { csvContent += `"${a.company}","${a.role}","${a.status}","${a.date}"\n`; });
+      
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "careergps_applications.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
 
     function loadApplications() {
@@ -1020,18 +1046,32 @@
       const msContainer = document.getElementById('milestones-container');
       msContainer.innerHTML = '';
       
+      // Load saved Engine State (Checkboxes)
+      const engineState = JSON.parse(localStorage.getItem('careergps_engine') || '{}');
+      
       const milestones = roadmap.milestones || [];
       milestones.forEach((ms, i) => {
-        const tasks = ms.tasks ? ms.tasks.map(t => `<li>${t}</li>`).join('') : '';
+        const msId = `ms_${i}`;
+        const tasks = ms.tasks ? ms.tasks.map((t, tIndex) => {
+          const taskId = `${msId}_task_${tIndex}`;
+          const isChecked = engineState[taskId] ? 'checked' : '';
+          const textStyle = engineState[taskId] ? 'text-decoration: line-through; opacity: 0.5;' : '';
+          return `
+            <div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px;">
+              <input type="checkbox" id="${taskId}" ${isChecked} onchange="toggleTask('${taskId}')" style="margin-top: 5px; cursor: pointer; width: 16px; height: 16px; accent-color: var(--primary);">
+              <label for="${taskId}" id="label_${taskId}" style="cursor: pointer; font-size: 1rem; color: var(--text); ${textStyle}">${t}</label>
+            </div>
+          `;
+        }).join('') : '';
         const html = `
           <div class="milestone">
             <div class="milestone-number">${i + 1}</div>
             <div class="milestone-content">
               <h4>Weeks ${ms.week_start}-${ms.week_end}: ${ms.label || 'Phase'}</h4>
               <p style="margin-bottom: 1.2rem; font-size: 1.05rem;">${ms.goal || ''}</p>
-              <ul style="margin-left: 1.5rem; color: var(--text-muted); font-size: 1rem; margin-bottom: 1.2rem;">
+              <div style="margin-bottom: 1.2rem;">
                 ${tasks}
-              </ul>
+              </div>
               ${ms.proof_of_work ? `
                 <div class="pow-box">
                   <strong style="color: var(--secondary);">🔒 Proof of Work to Unlock Next Stage:</strong><br/>
@@ -1078,6 +1118,24 @@
         element.style.border = originalBorder;
         element.style.padding = originalPadding;
       });
+    }
+    
+    // THE ENGINE LOGIC (Checkbox state)
+    function toggleTask(taskId) {
+      const isChecked = document.getElementById(taskId).checked;
+      const label = document.getElementById(`label_${taskId}`);
+      if(isChecked) {
+        label.style.textDecoration = 'line-through';
+        label.style.opacity = '0.5';
+      } else {
+        label.style.textDecoration = 'none';
+        label.style.opacity = '1';
+      }
+      
+      // Save state to localStorage
+      const engineState = JSON.parse(localStorage.getItem('careergps_engine') || '{}');
+      engineState[taskId] = isChecked;
+      localStorage.setItem('careergps_engine', JSON.stringify(engineState));
     }
   </script>
 </body>
