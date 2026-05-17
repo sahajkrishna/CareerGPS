@@ -658,7 +658,7 @@
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
           <div style="display: flex; flex-direction: column;">
             <label style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; font-weight: 600;">Status</label>
-            <select id="mirror-status" style="cursor: pointer; height: 42px;">
+            <select id="mirror-status" style="cursor: pointer;">
               <option value="Pending">🕒 Pending</option>
               <option value="Interview">✓ Interviewing</option>
               <option value="Rejected">❌ Rejected</option>
@@ -667,7 +667,7 @@
           </div>
           <div style="display: flex; flex-direction: column;">
             <label style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; font-weight: 600;">Follow-Up Date (Optional)</label>
-            <input type="date" id="mirror-followup" style="cursor: pointer; color-scheme: dark; height: 42px;">
+            <input type="date" id="mirror-followup" style="cursor: pointer; color-scheme: dark;">
           </div>
         </div>
         <button onclick="saveApplication()" style="background: var(--success); color: #000; border: none; font-weight: 700; width: 100%;">Save Application</button>
