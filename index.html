@@ -448,11 +448,26 @@
   <div class="bg-orb orb-1"></div>
   <div class="bg-orb orb-2"></div>
 
-  <div class="container">
-    <header>
-      <h1>CareerGPS Diagnostic Engine</h1>
-      <p class="subtitle">AI-Driven Honest Assessment & 90-Day Anchored Roadmap</p>
+  <div class="container" style="max-width: 1000px;">
+    <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h1 style="margin-bottom: 0; font-size: 1.8rem; display: flex; align-items: center; gap: 10px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          CareerGPS
+        </h1>
+      </div>
+      <nav style="display: flex; gap: 0.5rem; background: rgba(255,255,255,0.03); padding: 0.3rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+        <button id="nav-reality" onclick="showTab('reality')" style="background: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;">◎ Reality Check</button>
+        <button id="nav-mirror" onclick="showTab('mirror')" style="background: transparent; color: var(--text-muted); border: none; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;">↺ The Mirror</button>
+      </nav>
     </header>
+
+    <!-- TAB: REALITY CHECK -->
+    <div id="tab-reality">
+      <div style="text-align: center; margin-bottom: 3rem;">
+        <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Diagnostic Engine</h1>
+        <p class="subtitle">AI-Driven Honest Assessment & 90-Day Anchored Roadmap</p>
+      </div>
 
     <!-- Input Form -->
     <div class="card" id="input-section">
@@ -595,10 +610,134 @@
         <div id="milestones-container"></div>
       </div>
     </div>
+    </div> <!-- END TAB REALITY -->
+
+    <!-- TAB: THE MIRROR -->
+    <div id="tab-mirror" style="display: none; animation: fadeIn 0.3s ease;">
+      <header style="margin-bottom: 2.5rem;">
+        <h3 style="color: var(--text-muted); font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase;">The Mirror</h3>
+        <h1 style="font-size: 3rem; margin-bottom: 0.5rem; letter-spacing: -1px;">Receipts.</h1>
+        <p class="subtitle" style="text-align: left; font-size: 1.1rem; max-width: 600px;">Every application. Every rejection. Every lesson.</p>
+      </header>
+
+      <!-- Metrics -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1rem; margin-bottom: 2.5rem;">
+        <div class="card" style="padding: 1.2rem; background: rgba(255,255,255,0.02);">
+          <div style="color: var(--text-muted); font-size: 0.75rem; font-weight: 700; margin-bottom: 0.5rem; letter-spacing: 1px;">TOTAL</div>
+          <div id="metric-total" style="font-size: 2.2rem; font-weight: 700; color: #fff;">0</div>
+        </div>
+        <div class="card" style="padding: 1.2rem; background: rgba(255,255,255,0.02);">
+          <div style="color: var(--text-muted); font-size: 0.75rem; font-weight: 700; margin-bottom: 0.5rem; letter-spacing: 1px;">🕒 PENDING</div>
+          <div id="metric-pending" style="font-size: 2.2rem; font-weight: 700; color: #fff;">0</div>
+        </div>
+        <div class="card" style="padding: 1.2rem; background: rgba(255,255,255,0.02);">
+          <div style="color: var(--danger); font-size: 0.75rem; font-weight: 700; margin-bottom: 0.5rem; letter-spacing: 1px;">❌ REJECTED</div>
+          <div id="metric-rejected" style="font-size: 2.2rem; font-weight: 700; color: #fff;">0</div>
+        </div>
+        <div class="card" style="padding: 1.2rem; background: rgba(255,255,255,0.02);">
+          <div style="color: var(--primary); font-size: 0.75rem; font-weight: 700; margin-bottom: 0.5rem; letter-spacing: 1px;">✓ INTERVIEW</div>
+          <div id="metric-interview" style="font-size: 2.2rem; font-weight: 700; color: #fff;">0</div>
+        </div>
+        <div class="card" style="padding: 1.2rem; background: rgba(255,255,255,0.02);">
+          <div style="color: var(--success); font-size: 0.75rem; font-weight: 700; margin-bottom: 0.5rem; letter-spacing: 1px;">🏆 OFFER</div>
+          <div id="metric-offer" style="font-size: 2.2rem; font-weight: 700; color: #fff;">0</div>
+        </div>
+      </div>
+
+      <!-- Add New Form -->
+      <div class="card" style="margin-bottom: 2rem; background: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.05);">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+          <input type="text" id="mirror-company" placeholder="Company (e.g. Google)">
+          <input type="text" id="mirror-role" placeholder="Role (e.g. Software Engineer)">
+        </div>
+        <select id="mirror-status" style="margin-bottom: 1.5rem; cursor: pointer;">
+          <option value="Pending">🕒 Pending</option>
+          <option value="Interview">✓ Interviewing</option>
+          <option value="Rejected">❌ Rejected</option>
+          <option value="Offer">🏆 Offer Received</option>
+        </select>
+        <button onclick="saveApplication()" style="background: var(--success); color: #000; border: none; font-weight: 700; width: 100%;">Save Receipt</button>
+      </div>
+
+      <!-- Logs Table -->
+      <div class="card" style="padding: 0; overflow: hidden; background: rgba(0,0,0,0.2);">
+        <div id="mirror-logs-container" style="text-align: center; color: var(--text-muted); padding: 3rem 1rem;">
+          No applications yet. Start logging — even the rejections.
+        </div>
+      </div>
+    </div> <!-- END TAB MIRROR -->
 
   </div>
 
+  <style>
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+
   <script>
+    // TAB LOGIC
+    function showTab(tabName) {
+      document.getElementById('tab-reality').style.display = tabName === 'reality' ? 'block' : 'none';
+      document.getElementById('tab-mirror').style.display = tabName === 'mirror' ? 'block' : 'none';
+      
+      document.getElementById('nav-reality').style.background = tabName === 'reality' ? 'var(--primary)' : 'transparent';
+      document.getElementById('nav-reality').style.color = tabName === 'reality' ? 'white' : 'var(--text-muted)';
+      
+      document.getElementById('nav-mirror').style.background = tabName === 'mirror' ? 'var(--primary)' : 'transparent';
+      document.getElementById('nav-mirror').style.color = tabName === 'mirror' ? 'white' : 'var(--text-muted)';
+
+      if(tabName === 'mirror') loadApplications();
+    }
+
+    // MIRROR DASHBOARD LOGIC (Stateful via localStorage)
+    function saveApplication() {
+      const company = document.getElementById('mirror-company').value.trim();
+      const role = document.getElementById('mirror-role').value.trim();
+      const status = document.getElementById('mirror-status').value;
+      
+      if(!company || !role) return alert("Please enter both Company and Role to save a receipt!");
+
+      const app = { id: Date.now(), company, role, status, date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) };
+      let apps = JSON.parse(localStorage.getItem('careergps_apps') || '[]');
+      apps.unshift(app); // Add to top
+      localStorage.setItem('careergps_apps', JSON.stringify(apps));
+      
+      document.getElementById('mirror-company').value = '';
+      document.getElementById('mirror-role').value = '';
+      loadApplications();
+    }
+
+    function loadApplications() {
+      const apps = JSON.parse(localStorage.getItem('careergps_apps') || '[]');
+      
+      // Update Metrics Dashboard
+      document.getElementById('metric-total').innerText = apps.length;
+      document.getElementById('metric-pending').innerText = apps.filter(a => a.status === 'Pending').length;
+      document.getElementById('metric-rejected').innerText = apps.filter(a => a.status === 'Rejected').length;
+      document.getElementById('metric-interview').innerText = apps.filter(a => a.status === 'Interview').length;
+      document.getElementById('metric-offer').innerText = apps.filter(a => a.status === 'Offer').length;
+
+      // Render Logs
+      const container = document.getElementById('mirror-logs-container');
+      if (apps.length === 0) {
+        container.innerHTML = '<div style="padding: 3rem 1rem;">No applications yet. Start logging — even the rejections.</div>';
+        return;
+      }
+
+      container.innerHTML = apps.map(app => `
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+          <div>
+            <div style="font-weight: 600; color: #fff; font-size: 1.1rem; margin-bottom: 4px;">${app.company}</div>
+            <div style="font-size: 0.9rem; color: var(--text-muted);">${app.role} <span style="margin: 0 8px; opacity: 0.5;">•</span> ${app.date}</div>
+          </div>
+          <div style="padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.5px;
+            background: ${app.status === 'Pending' ? 'rgba(245, 158, 11, 0.1)' : app.status === 'Rejected' ? 'rgba(239, 68, 68, 0.1)' : app.status === 'Interview' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(16, 185, 129, 0.1)'};
+            color: ${app.status === 'Pending' ? '#f59e0b' : app.status === 'Rejected' ? '#ef4444' : app.status === 'Interview' ? '#a5b4fc' : '#10b981'}; border: 1px solid currentColor;">
+            ${app.status.toUpperCase()}
+          </div>
+        </div>
+      `).join('');
+    }
+
     // PRODUCTION URL (Always On)
     const WEBHOOK_URL = 'https://sahajwork.app.n8n.cloud/webhook/careergps/assess';
 
