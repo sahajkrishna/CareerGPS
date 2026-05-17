@@ -773,11 +773,14 @@
             <div style="font-size: 0.9rem; color: var(--text-muted);">${app.role} <span style="margin: 0 8px; opacity: 0.5;">•</span> ${app.date}</div>
           </div>
           <div style="display: flex; align-items: center; gap: 10px;">
-            <select onchange="updateStatus(${app.id}, this.value)" style="padding: 6px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5); color: #fff;">
-              <option value="Pending" ${app.status === 'Pending' ? 'selected' : ''}>🕒 Pending</option>
-              <option value="Interview" ${app.status === 'Interview' ? 'selected' : ''}>✓ Interview</option>
-              <option value="Offer" ${app.status === 'Offer' ? 'selected' : ''}>🏆 Offer</option>
-              <option value="Rejected" ${app.status === 'Rejected' ? 'selected' : ''}>❌ Rejected</option>
+            <select onchange="updateStatus(${app.id}, this.value)" style="padding: 6px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer; 
+              background: ${app.status === 'Pending' ? 'rgba(245, 158, 11, 0.1)' : app.status === 'Rejected' ? 'rgba(239, 68, 68, 0.1)' : app.status === 'Interview' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(16, 185, 129, 0.1)'};
+              color: ${app.status === 'Pending' ? '#f59e0b' : app.status === 'Rejected' ? '#ef4444' : app.status === 'Interview' ? '#a5b4fc' : '#10b981'}; 
+              border: 1px solid currentColor; color-scheme: dark; outline: none;">
+              <option value="Pending" ${app.status === 'Pending' ? 'selected' : ''} style="background: #111; color: #f59e0b;">🕒 Pending</option>
+              <option value="Interview" ${app.status === 'Interview' ? 'selected' : ''} style="background: #111; color: #a5b4fc;">✓ Interviewing</option>
+              <option value="Offer" ${app.status === 'Offer' ? 'selected' : ''} style="background: #111; color: #10b981;">🏆 Offer</option>
+              <option value="Rejected" ${app.status === 'Rejected' ? 'selected' : ''} style="background: #111; color: #ef4444;">❌ Rejected</option>
             </select>
             <button onclick="deleteApplication(${app.id})" style="background: transparent; border: none; cursor: pointer; color: var(--danger); font-size: 1.1rem; opacity: 0.7; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'" title="Delete Record">🗑️</button>
           </div>
