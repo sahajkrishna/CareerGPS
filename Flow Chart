@@ -1,0 +1,37 @@
+graph TD
+    %% Styling
+    classDef frontend fill:#1e1e2f,stroke:#6366f1,stroke-width:2px,color:#fff;
+    classDef n8n fill:#ff6d5a,stroke:#fff,stroke-width:2px,color:#fff;
+    classDef ai fill:#10b981,stroke:#fff,stroke-width:2px,color:#fff;
+    classDef db fill:#0f9d58,stroke:#fff,stroke-width:2px,color:#fff;
+
+    %% Frontend Block
+    subgraph Client ["Frontend (GitHub Pages)"]
+        UI["💻 CareerGPS UI<br/>(Vanilla JS, HTML5, CSS3)"]:::frontend
+        Parse["📄 Local PDF Parsing<br/>(pdf.js, mammoth.js)"]:::frontend
+        State["💾 Local Storage<br/>(State Management)"]:::frontend
+    end
+
+    %% Backend Block
+    subgraph Orchestration ["Backend (n8n Automation)"]
+        Hook1["⚡ Webhook 1<br/>(/careergps/assess)"]:::n8n
+        Hook2["⚡ Webhook 2<br/>(/careergps/tracker)"]:::n8n
+    end
+
+    %% External Services Block
+    subgraph Services ["External Services"]
+        LLM["🧠 AI Agents<br/>(OpenAI / Groq)"]:::ai
+        Sheets["📊 Database Sync<br/>(Google Sheets API)"]:::db
+    end
+
+    %% Connections
+    UI -- "1. Upload Resume (JSON)" --> Hook1
+    Parse -- "Extracts Text" --> UI
+    
+    Hook1 -- "2. Orchestrate Agents" --> LLM
+    LLM -- "3. Return JSON Roadmap" --> Hook1
+    Hook1 -- "4. Render Dashboard" --> UI
+
+    UI -- "5. Background Sync (No-CORS)" --> Hook2
+    Hook2 -- "6. Live CRUD Sync" --> Sheets
+    UI -- "Optimistic Update" --> State
